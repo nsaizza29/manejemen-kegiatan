@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Lokasi - Manajemen Kegiatan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 20px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .info-item {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #495057;
+            min-width: 120px;
+        }
+        .info-value {
+            color: #6c757d;
+        }
+        .badge {
+            border-radius: 15px;
+            padding: 8px 12px;
+        }
+        .table th {
+            border-top: none;
+            font-weight: 600;
+            color: #495057;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    @include('components/navigation')
+
+    <div class="container mt-4">
+        @include('components/flash-messages')
+
+        <!-- Header Card -->
+        <div class="card">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h4 class="mb-0">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            Detail Lokasi
+                        </h4>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a href="/lokasi/{{ lokasi.id }}/edit" class="btn btn-light">
+                                <i class="fas fa-edit me-2"></i>Edit
+                            </a>
+                            <form method="POST" 
+                                  action="/lokasi/{{ lokasi.id }}/delete" 
+                                  style="display: inline;"
+                                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus lokasi ini?')">
+                                <input type="hidden" name="_token" value="{{ csrfToken }}" style="display: none;">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-trash me-2"></i>Hapus
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <!-- Lokasi Info -->
+                <div class="info-item">
+                    <div class="row align-items-center">
+                        <div class="col-md-3">
+                            <span class="info-label">Nama Lokasi:</span>
+                        </div>
+                        <div class="col-md-9">
+                            <span class="info-value fw-bold fs-5">{{ lokasi.nama_lokasi }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <span class="info-label">Alamat:</span>
+                        </div>
+                        <div class="col-md-9">
+                            <span class="info-value">{{ lokasi.alamat }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="row align-items-center">
+                        <div class="col-md-3">
+                            <span class="info-label">Kapasitas:</span>
+                        </div>
+                        <div class="col-md-9">
+                            <span class="badge bg-info fs-6">{{ lokasi.kapasitas || 0 }} orang</span>
+                        </div>
+                    </div>
+                </div>
+
+                @if(lokasi.deskripsi)
+                    <div class="info-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <span class="info-label">Deskripsi:</span>
+                            </div>
+                            <div class="col-md-9">
+                                <span class="info-value">{{ lokasi.deskripsi }}</span>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                <div class="info-item">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <span class="info-label">Dibuat:</span>
+                        </div>
+                        <div class="col-md-9">
+                            <span class="info-value">{{ lokasi.createdAt.toFormat('dd/MM/yyyy HH:mm') }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <span class="info-label">Terakhir Update:</span>
+                        </div>
+                        <div class="col-md-9">
+                            <span class="info-value">{{ lokasi.updatedAt.toFormat('dd/MM/yyyy HH:mm') }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kegiatan yang Menggunakan Lokasi Ini -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-calendar me-2"></i>
+                    Kegiatan di Lokasi Ini
+                </h5>
+            </div>
+            <div class="card-body">
+                @if(lokasi.kegiatans && lokasi.kegiatans.length > 0)
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nama Kegiatan</th>
+                                    <th>Organisasi</th>
+                                    <th>Tanggal</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @each(kegiatan in lokasi.kegiatans)
+                                    <tr>
+                                        <td>
+                                            <strong>{{ kegiatan.nama_kegiatan }}</strong>
+                                        </td>
+                                        <td>
+                                            @if(kegiatan.organisasi)
+                                                <span class="badge bg-secondary">
+                                                    {{ kegiatan.organisasi.nama_organisasi }}
+                                                </span>
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if(kegiatan.tanggal_kegiatan)
+                                                {{ kegiatan.tanggal_kegiatan.toFormat('dd/MM/yyyy') }}
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <a href="/kegiatan/{{ kegiatan.id }}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @end
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                        <h6>Belum ada kegiatan</h6>
+                        <p class="mb-0">Lokasi ini belum digunakan untuk kegiatan apapun.</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row">
+            <div class="col-md-6">
+                <a href="/lokasi" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Kembali ke Daftar
+                </a>
+            </div>
+            <div class="col-md-6 text-end">
+                <a href="/kegiatan/create" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Buat Kegiatan Baru
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

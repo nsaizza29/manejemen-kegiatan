@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Anggota - Manajemen Kegiatan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    @include('components/navigation')
+
+    <!-- Main Content -->
+    <main class="container my-4">
+        @include('components/flash-messages')
+
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="/anggota">Anggota</a></li>
+                        <li class="breadcrumb-item active">Detail Anggota</li>
+                    </ol>
+                </nav>
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h1 class="h3 mb-0">
+                            <i class="fas fa-user me-2"></i>{{ anggota.nama }}
+                        </h1>
+                        <p class="text-muted">Detail informasi anggota</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="/anggota/{{ anggota.id }}/edit" class="btn btn-warning">
+                            <i class="fas fa-edit me-1"></i>Edit
+                        </a>
+                        <form action="/anggota/{{ anggota.id }}/delete" method="POST" style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus anggota ini?')">
+                            <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i>Hapus
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Anggota Details -->
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-info-circle me-2"></i>Informasi Anggota
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Nama Lengkap:</strong><br>{{ anggota.nama }}</p>
+                                <p><strong>NIM:</strong><br>{{ anggota.nim }}</p>
+                                <p><strong>Email:</strong><br>{{ anggota.email }}</p>
+                                <p><strong>Jenis Kelamin:</strong><br>{{ anggota.jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Organisasi:</strong><br>{{ anggota.organisasi.nama_organisasi }}</p>
+                                <p><strong>No. Telepon:</strong><br>{{ anggota.no_telepon || '-' }}</p>
+                                <p><strong>Tanggal Dibuat:</strong><br>
+                                    {{ anggota.created_at ? anggota.created_at.toFormat('dd/MM/yyyy HH:mm') : '-' }}
+                                </p>
+                                <p><strong>Terakhir Diupdate:</strong><br>
+                                    {{ anggota.updated_at ? anggota.updated_at.toFormat('dd/MM/yyyy HH:mm') : '-' }}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        @if(anggota.alamat)
+                            <hr>
+                            <p><strong>Alamat:</strong></p>
+                            <p class="text-muted">{{ anggota.alamat }}</p>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Kepanitiaan Section -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-calendar me-2"></i>Kegiatan yang Diikuti
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @if(anggota.kepanitiaans && anggota.kepanitiaans.length > 0)
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nama Kegiatan</th>
+                                            <th>Jabatan</th>
+                                            <th>Tanggal Pelaksanaan</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @each(kepanitiaan in anggota.kepanitiaans)
+                                            <tr>
+                                                <td>{{ kepanitiaan.kegiatan.nama }}</td>
+                                                <td>
+                                                    <span class="badge bg-primary">{{ kepanitiaan.jabatan }}</span>
+                                                </td>
+                                                <td>{{ kepanitiaan.kegiatan.tgl_pelaksanaan ? kepanitiaan.kegiatan.tgl_pelaksanaan.toFormat('dd/MM/yyyy') : '-' }}</td>
+                                                <td>
+                                                    <a href="/kegiatan/{{ kepanitiaan.kegiatan.id }}" class="btn btn-sm btn-info" title="Lihat Kegiatan">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @end
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="text-center py-4">
+                                <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">Belum mengikuti kegiatan apapun</p>
+                                <a href="/kepanitiaan/create" class="btn btn-primary">
+                                    <i class="fas fa-plus me-1"></i>Tambah ke Kegiatan
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Quick Actions -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-bolt me-2"></i>Quick Actions
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="/anggota/{{ anggota.id }}/edit" class="btn btn-warning">
+                                <i class="fas fa-edit me-1"></i>Edit Anggota
+                            </a>
+                            <a href="/kepanitiaan/create?anggota_id={{ anggota.id }}" class="btn btn-primary">
+                                <i class="fas fa-calendar-plus me-1"></i>Tambah ke Kegiatan
+                            </a>
+                            <a href="/anggota" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Kembali ke Daftar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-bar me-2"></i>Statistik
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-12">
+                                <h4 class="text-primary">{{ anggota.kepanitiaans ? anggota.kepanitiaans.length : 0 }}</h4>
+                                <small class="text-muted">Total Kegiatan</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

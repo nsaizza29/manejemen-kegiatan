@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Panitia - Manajemen Kegiatan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    @include('components/navigation')
+
+    <!-- Main Content -->
+    <main class="container my-4">
+        @include('components/flash-messages')
+
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="/kepanitiaan?kegiatan_id={{ kegiatan.id }}">
+                                <i class="fas fa-users me-1"></i>Panitia
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">Tambah Panitia</li>
+                    </ol>
+                </nav>
+                
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-user-plus me-2"></i>Tambah Panitia
+                </h1>
+                <p class="text-muted">Pilih anggota untuk menjadi panitia kegiatan</p>
+            </div>
+        </div>
+
+        <!-- Kegiatan Info -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ kegiatan.nama }}</h5>
+                        <p class="card-text mb-0">
+                            <strong>Organisasi:</strong> {{ kegiatan.organisasi ? kegiatan.organisasi.nama_organisasi : '-' }} | 
+                            <strong>Lokasi:</strong> {{ kegiatan.lokasi ? kegiatan.lokasi.nama_lokasi : '-' }} | 
+                            <strong>Tanggal:</strong> {{ kegiatan.tgl_pelaksanaan ? kegiatan.tgl_pelaksanaan.toFormat('dd/MM/yyyy') : '-' }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-edit me-2"></i>Form Panitia
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="/kepanitiaan" method="POST">
+                            <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+                            <input type="hidden" name="kegiatan_id" value="{{ kegiatan.id }}">
+                            
+                            <div class="mb-3">
+                                <label for="anggota_id" class="form-label">Pilih Anggota <span class="text-danger">*</span></label>
+                                <select class="form-select" id="anggota_id" name="anggota_id" required>
+                                    <option value="">Pilih Anggota</option>
+                                    @each(anggota in anggotas)
+                                        <option value="{{ anggota.id }}">{{ anggota.nama }} ({{ anggota.nim }}) - {{ anggota.organisasi ? anggota.organisasi.nama_organisasi : '-' }}</option>
+                                    @end
+                                </select>
+                                <div class="form-text">Pilih anggota yang akan menjadi panitia kegiatan ini</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="jabatan" class="form-label">Jabatan <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="jabatan" name="jabatan" required placeholder="Contoh: Ketua, Sekretaris, Bendahara, dll">
+                                <div class="form-text">Masukkan jabatan atau peran dalam panitia</div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <a href="/kepanitiaan?kegiatan_id={{ kegiatan.id }}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-1"></i>Kembali
+                                </a>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save me-1"></i>Simpan Panitia
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-info-circle me-2"></i>Informasi
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-lightbulb me-1"></i>Tips:</h6>
+                            <ul class="mb-0">
+                                <li>Pilih anggota yang sesuai dengan kebutuhan kegiatan</li>
+                                <li>Pastikan jabatan yang diberikan jelas dan spesifik</li>
+                                <li>Satu anggota bisa menjadi panitia di beberapa kegiatan</li>
+                                <li>Setelah ditambahkan, panitia dapat diedit atau dihapus</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <h6><i class="fas fa-exclamation-triangle me-1"></i>Catatan:</h6>
+                            <p class="mb-0">Jika anggota belum tersedia, silakan tambahkan terlebih dahulu melalui menu Anggota.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
